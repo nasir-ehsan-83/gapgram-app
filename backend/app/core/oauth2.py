@@ -1,9 +1,14 @@
-from fastapi.concurrency import run_in_threadpool
-from jose import jwt, JWTError
-from datetime import datetime, timedelta
 from typing import Dict
-
-from app.schemas.token import TokenData
+from fastapi.concurrency import run_in_threadpool
+from jose import (
+    jwt, 
+    JWTError
+)
+from datetime import (
+    datetime, 
+    timedelta
+)
+from app.tokens.token_schemas import TokenData
 from app.core.config import settings
 
 SECRET_KEY = settings.SECRET_KEY
