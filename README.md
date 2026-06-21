@@ -1,4 +1,4 @@
-# 🚀 FastAPI Social Media Application
+# 🚀 GapGram Applicatoin
 
 A **production-ready backend API** for a social media platform, built with modern Python technologies.  
 This project emphasizes **scalability, security, clean architecture, and real-world backend design**, serving as the backend core for a full-stack application with a React frontend.
@@ -9,117 +9,117 @@ This project emphasizes **scalability, security, clean architecture, and real-wo
 
 This application is designed as a **real-world social media backend system**, implementing key engineering principles:
 
-- Modular architecture
-- Authentication & authorization
-- Database design & ORM
+- **Feature-Based Architecture** (self-contained modules)
+- Authentication & Authorization with JWT
+- Database design & ORM (SQLAlchemy)
 - RESTful API best practices
+- Clean separation of concerns
 
 **Built using:**
-- FastAPI
+- FastAPI (Python)
 - PostgreSQL
-- SQLAlchemy
-- JWT Authentication
+- SQLAlchemy ORM
+- JWT Authentication (OAuth2)
 - React (frontend, in progress)
 
 ---
 
-## 🏗 Project Structure
-
-```bash
-fastapi-social-app/
-├── backend/
-│   ├── app/
-│   │   ├── core/        # Configurations, settings, security
-│   │   ├── db/          # Database session & migrations
-│   │   ├── models/      # SQLAlchemy models
-│   │   ├── routers/     # API route definitions
-│   │   ├── schemas/     # Pydantic schemas
-│   │   ├── services/    # Business logic
-│   │   ├── utils/       # Helper functions
-│   │   └── main.py      # FastAPI entry point
-│   │
-│   ├── tests/           # Unit & integration tests
-│   ├── .env.example     # Environment variables template
-│   └── requirements.txt # Python dependencies
-│
-├── frontend/            # React frontend (planned)
-└── README.md
-```
-
----
-
 ## 🧠 Tech Stack
-**Backend:**
-- FastAPI
-- PostgreSQL
-- SQLAlchemy
-- Pydantic
-- JWT + OAuth2
-- passlib (password hashing)
 
-**Frontend:**
-- React (planned)
-- Axios (HTTP client)
+### Backend
+- **Framework:** FastAPI
+- **Database:** PostgreSQL
+- **ORM:** SQLAlchemy
+- **Validation:** Pydantic v2
+- **Authentication:** JWT + OAuth2
+- **Password Hashing:** passlib (bcrypt)
+- **Migrations:** Alembic
+
+### Frontend (Planned)
+- React
+- Axios
+- Tailwind CSS
 
 ---
 
 ## ✨ Features
 
-- 🔐 User registration & authentication
-- 🔑 JWT-based login system
-- 🔒 Secure password hashing
-- 🗄 PostgreSQL database integration
-- 🌐 RESTful API design
-- 🧩 Modular architecture for scalability
+### ✅ Completed
+- 🔐 User Authentication (Register, Login)
+- 🔑 JWT-based Authorization
+- 🔒 Secure Password Hashing
+- 👤 User Management (CRUD)
+- 📝 Posts (Create, Read, Update, Delete)
+- 👍 Voting System (Like/Unlike)
+- 🗄 PostgreSQL Integration
+- 🌐 RESTful API
+- 📚 Interactive API Documentation
+- 🧩 Feature-Based Architecture
+- ✅ Input Validation with Pydantic
 
----
-
-## 🚧 Project Status
-- **Backend:** ✅ Completed
-- **Frontend:** 🚧 In Progress
-- **Deployment:** 📌 Planned
+### 🚧 In Progress
+- 💬 Comments System
+- 👥 Follow/Unfollow Users
+- 📧 Email Verification
 
 ---
 
 ## 🚀 Getting Started
 
-Clone the repository:
-```
-git clone https://github.com/USERNAME/fastapi-social-app.git
-cd fastapi-social-app
-```
+### Prerequisites
+- Python 3.10+
+- PostgreSQL
 
-Create a virtual environment:
-```
-python -m venv venv
-source venv/bin/activate
-```
+### Installation
 
-Install dependencies:
-```
-pip install -r backend/requirements.txt
-```
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/nasir-ehsan-83/gapgram-app.git
+   cd gapgram-app
+   ```
 
-Run the development server:
-```
-uvicorn backend.app.main:app --reload
-```
+2. **Create virtual environment:**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. **Install dependencies:**
+   ```bash
+   pip install -r backend/requirements.txt
+   ```
+
+4. **Set up environment variables:**
+   ```bash
+   cp backend/.env.example backend/.env
+   # Edit backend/.env with your credentials
+   ```
+
+5. **Run the development server:**
+   ```bash
+   uvicorn backend.app.main:app --reload
+   ```
 
 ---
 
-## 📌 API Documentation
+## 🏗 Architecture
 
-Interactive API docs available at:
-👉 http://127.0.0.1:8000/docs
+### Feature-Based Architecture
+Each feature is self-contained with its own models, schemas, services, and routes.
+
+**Benefits:**
+- ✅ Clear separation of concerns
+- ✅ Easy maintenance and scalability
+- ✅ Modular development
 
 ---
 
 ## 👨‍💻 Author
-Nasir Ahmad Ehsan  
-Backend Developer | AI Enthusiast | Systems Programmer
+- **Nasir Ahmad Ehsan**
+- 🔗 GitHub: nasir-ehsan-83
+- 💼 Backend Developer | AI Enthusiast | Systems Programmer
 
 ---
 
 ## 📜 License
 This project is licensed under the MIT License.
-Feel free to use, modify, and distribute with proper attribution.
