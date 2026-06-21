@@ -4,9 +4,9 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
-from app.models.user import Base
-from app.models.post import Base
-from app.models.vote import Base
+from app.users.user_model import Base
+from app.posts.post_model import Base
+from app.votes.vote_model import Base
 from app.core.config import settings
 from app.db.database import Base
 
