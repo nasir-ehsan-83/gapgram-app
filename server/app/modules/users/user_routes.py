@@ -9,17 +9,17 @@ from typing import (
     List, 
     Optional
 )
-from app.db.database import get_db
-from app.dependency.current_user import get_current_user
-from app.users.user_model import User
-from app.users.user_schema import (
+from app.config.database import get_db
+from app.dependencies.current_user import get_current_user
+from app.modules.users.user_model import User
+from app.modules.users.user_schemas import (
     UserCreate, 
     UserAdminOut, 
     UserPrivateOut,
     UserPublicOut, 
     UserUpdate
 )
-from app.users.user_service import (
+from app.modules.users.user_services import (
     create_user, 
     get_user_by_email, 
     update_user_by_email, 

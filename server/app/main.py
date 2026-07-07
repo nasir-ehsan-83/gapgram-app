@@ -1,10 +1,10 @@
 from fastapi import FastAPI
 
-from app.db import database
-from app.auth import auth_routes
-from app.users import user_routes
-from app.posts import post_routes
-from app.votes import vote_routes
+from app.config import database
+from app.modules.auth import auth_routes
+from app.modules.users import user_routes
+from app.modules.posts import post_routes
+from app.modules.votes import vote_routes
 
 app = FastAPI()
 

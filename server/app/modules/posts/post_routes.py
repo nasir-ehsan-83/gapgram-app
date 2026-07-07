@@ -8,17 +8,17 @@ from typing import (
     List, 
     Optional
 )
-from app.db.database import get_db
-from app.dependency.current_user import get_current_user
-from app.posts.post_model import Post
-from app.posts.post_schemas import (
+from app.config.database import get_db
+from app.dependencies.current_user import get_current_user
+from app.modules.posts.post_model import Post
+from app.modules.posts.post_schemas import (
     PostCreate, 
     PostAdminOut, 
     PostPrivateOut, 
     PostPublicOut, 
     PostUpdate
 )
-from app.posts.post_services import (
+from app.modules.posts.post_services import (
     create_new_post, 
     get_one_post, 
     get_all_posts, 

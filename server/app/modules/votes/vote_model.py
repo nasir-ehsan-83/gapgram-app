@@ -5,7 +5,7 @@ from sqlalchemy import (
     Enum as SQLEnum
 )
 from sqlalchemy.orm import relationship
-from app.db.database import Base
+from app.config.database import Base
 from app.enums.post import ReactionType
 
 class Vote(Base):

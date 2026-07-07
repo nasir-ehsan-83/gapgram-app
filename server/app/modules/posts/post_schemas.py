@@ -1,13 +1,12 @@
 from pydantic import (
     BaseModel, 
     ConfigDict, 
-    Field, 
-    field_validator
+    Field
 )
 from datetime import datetime
 from typing import Optional
 
-from app.users.user_schema import (
+from app.modules.users.user_schemas import (
     UserAdminOut, 
     UserPrivateOut, 
     UserPublicOut
