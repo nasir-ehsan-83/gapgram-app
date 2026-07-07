@@ -9,7 +9,7 @@ from datetime import (
     timedelta
 )
 from app.tokens.token_schemas import TokenData
-from app.core.config import settings
+from app.config.config import settings
 
 SECRET_KEY = settings.SECRET_KEY
 ALGORITHM = settings.ALGORITHM
