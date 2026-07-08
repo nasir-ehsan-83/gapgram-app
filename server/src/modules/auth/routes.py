@@ -5,9 +5,9 @@ from fastapi import (
     APIRouter, 
     Depends
 )
-from src.config.database import get_db
-from src.tokens.token_schemas import Token
-from src.modules.auth.auth_services import login
+from server.src.db.database import get_db
+from server.src.modules.auth.schemas import Token
+from server.src.modules.auth.services import login
 
 router = APIRouter(
     tags = ["Authentication"]

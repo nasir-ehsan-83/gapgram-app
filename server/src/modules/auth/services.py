@@ -5,8 +5,8 @@ from fastapi import (
     HTTPException, 
     status
 )
-from src.modules.users.user_model import User
-from src.core.oauth2 import create_access_token
+from server.src.modules.users.model import User
+from server.src.core.jwt_token import create_access_token
 from src.core.security import (
     hash, 
     verify

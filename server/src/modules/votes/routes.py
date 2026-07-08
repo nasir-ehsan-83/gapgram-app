@@ -4,13 +4,13 @@ from fastapi import (
     APIRouter, 
     Depends
 )
-from src.config.database import get_db
-from src.modules.votes.vote_model import Vote
-from src.modules.votes.vote_schemas import (
+from server.src.db.database import get_db
+from server.src.modules.votes.model import Vote
+from server.src.modules.votes.schemas import (
     VoteCreate, 
     VoteOut
 )
-from src.modules.votes.vote_services import (
+from server.src.modules.votes.services import (
     create_new_vote, 
     get_all_votes
 )

@@ -5,8 +5,8 @@ from sqlalchemy import (
     Enum as SQLEnum
 )
 from sqlalchemy.orm import relationship
-from src.config.database import Base
-from src.enums.post import ReactionType
+from server.src.db.database import Base
+from server.src.common.enums.post import ReactionType
 
 class Vote(Base):
     __tablename__ = "votes"
