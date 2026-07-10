@@ -1,95 +1,128 @@
-from fastapi import HTTPException, Response, status
+from typing import List
+from fastapi import Response
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
-from sqlalchemy import func
 
-from server.src.modules.users.schemas import UserCreate, UserUpdate
-from server.src.modules.users.model import User
+from server.src.common.errors.business_codes import ErrorCode
+from server.src.common.errors.http_exception import (
+    ConflictException, 
+    NotFoundException
+)
 from src.core.security import hash
+from server.src.modules.users.model import User
 
-async def create_user(user_in: UserCreate, db: AsyncSession) -> User:
-   
-    email_query = await db.execute(select(User).filter(User.email == user_in.email))
-    if email_query.scalars().first():
-        raise HTTPException(
-            status_code = status.HTTP_403_FORBIDDEN, 
-            detail = f"User with email: {user_in.email} already exists"
-        )
+from server.src.modules.users.schemas import (
+    UserCreate, 
+    UserUpdate
+)
+from server.src.modules.users.repository import (
+    create_new_user,
+    delete_user,
+    get_user_by_email,
+    get_user_by_id, 
+    get_user_by_username,
+    get_users,
+    get_users_by_name,
+    update_user
+)
 
+
+
+async def create_user(
+    user_in: UserCreate, 
+    db: AsyncSession
+) -> User:
    
-    username_query = await db.execute(select(User).filter(User.username == user_in.username))
-    if username_query.scalars().first():
-        raise HTTPException(
-            status_code = status.HTTP_403_FORBIDDEN, 
-            detail = f"User with username: {user_in.username} already exists."
-        )
+    if await get_user_by_email(user_in.email, db):
+        raise ConflictException(message = f"User with email: {user_in.email} already exists")
     
+    if await get_user_by_username(user_in.username, db):
+        raise ConflictException(message = f"User with username: {user_in.username} already exists.")
     
     user_data = user_in.model_dump()
     user_data["password"] = await hash(user_data["password"])
 
-    new_user = User(**user_data)
-    db.add(new_user)
+    return await create_new_user(user_data, db)
+
+
+
+
+async def get_all_users(
+    db: AsyncSession
+) -> List[User]:
+
+    return await get_users(db)
+
+
+
+
+async def get_user_email(
+    email: str, 
+    db: AsyncSession
+) -> User:
+
+    user = await get_user_by_email(email, db)
+
+    if not user:
+        raise NotFoundException(message = f"User with email: {email} does not exist!", error_code = ErrorCode.USER_NOT_FOUND)
     
-    await db.commit() 
-    await db.refresh(new_user)
-    return new_user
+    return user
 
-async def get_all_users(db: AsyncSession):
-    result = await db.execute(select(User))
-    return result.scalars().all()
 
-async def get_user_by_email(email: str, db: AsyncSession) -> User:
-    result = await db.execute(select(User).filter(User.email == email))
-    user = result.scalars().first()
+
+
+async def get_user_username(
+    username: str, 
+    db: AsyncSession
+) -> User:
+
+    user = await get_user_by_username(username, db)
+
+    if not user:
+        raise NotFoundException(message = f"User with username: {username} does not exist.", error_code = ErrorCode.USER_NOT_FOUND)
     
-    if not user:
-        raise HTTPException(
-            status_code = status.HTTP_404_NOT_FOUND, 
-            detail = f"User with email: {email} does not exist!"
-        )
     return user
 
-async def get_user_by_username(username: str, db: AsyncSession) -> User:
-    result = await db.execute(select(User).filter(func.lower(User.username) == func.lower(username)))
-    user = result.scalars().first()
-   
+
+
+
+async def search_user(
+    name: str, 
+    limit: int, 
+    skip: int, 
+    db: AsyncSession
+) -> List[User]:
+
+    return await get_users_by_name(name, limit, skip, db)
+
+
+
+
+async def get_user_id(
+    id: int, 
+    db: AsyncSession
+) -> User:
+
+    user = await get_user_by_id(id, db)
+
     if not user:
-        raise HTTPException(
-            status_code = status.HTTP_404_NOT_FOUND, 
-            detail = f"User with username: {username} does not exist."
-        )
+        raise NotFoundException(message = f"User by id: {id} does not exist.", error_code = ErrorCode.USER_NOT_FOUND)
+    
     return user
 
-async def get_users_by_name(name: str, limit: int, skip: int, db: AsyncSession) -> User:
-    # get users by name with limit
-    user_query = await db.execute(select(User).filter(User.name.contains(name)).limit(limit).offset(skip))
-    users = user_query.scalars().all()
 
-    return users
 
-async def get_user_by_id(id: int, db: AsyncSession) -> User:
-    result = await db.execute(select(User).filter(User.id == id))
-    user = result.scalars().first()
 
-    if not user:
-        raise HTTPException(
-            status_code = status.HTTP_404_NOT_FOUND, 
-            detail = f"User by id: {id} does not exist."
-        )
-    return user
-
-async def update_user_by_email(updated_user: UserUpdate, current_user: int, db: AsyncSession) -> User:
-    # get user from database by email and current id
-    result = await db.execute(select(User).filter(User.email == updated_user.email, User.id == int(current_user.id)))
-    user = result.scalars().first()
+async def update_user_by_email(
+    id: int, 
+    updated_user: UserUpdate, 
+    db: AsyncSession
+) -> User:
+    
+    user = await get_user_by_id(id, db)
 
     # if there is not any user by this email
     if not user:
-        raise HTTPException(
-            status_code = status.HTTP_404_NOT_FOUND, 
-            detail = f"User with email: {updated_user.email} does not exist"
-        )
+        raise NotFoundException(message = f"User by id: {id} does not exist.", error_code = ErrorCode.USER_NOT_FOUND)
     
     # delete undefined or null elements
     data = updated_user.model_dump(exclude_unset=True)
@@ -99,27 +132,23 @@ async def update_user_by_email(updated_user: UserUpdate, current_user: int, db: 
         data["password"] = await hash(data["password"])
         
     
-    for key, value in data.items():
-        setattr(user, key, value)
+    return await update_user(data, user)
 
-    await db.commit()
-    await db.refresh(user)
-    return user
 
-async def delete_user_by_email(email: str, current_user: int, db: AsyncSession):
-    # get user from database at first 
-    result = await db.execute(select(User).filter(User.id == int(current_user.id), User.email == email))
-    user = result.scalars().first()
 
+
+async def delete_user_by_id(
+    id: int, 
+    db: AsyncSession
+):
+    
+    user = await get_user_by_id(id, db)
+    
     # if there is not any user by this email
     if not user:
-        raise HTTPException(
-            status_code = status.HTTP_404_NOT_FOUND, 
-            detail = f"User by emial: {email} does not exist"
-        )
-    
+        raise NotFoundException(message = f"User by id: {id} does not exist.", error_code = ErrorCode.USER_NOT_FOUND)
+        
     # if the user exists then delete this
-    await db.delete(user)
-    await db.commit()
+    await delete_user(user, db)
 
-    return Response(status_code = status.HTTP_204_NO_CONTENT)
+    return Response(status_code = 204) # http-204-no-content
