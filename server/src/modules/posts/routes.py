@@ -1,7 +1,10 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import (
-    APIRouter, 
-    Depends, 
+    APIRouter,
+    Body, 
+    Depends,
+    Path,
+    Query, 
     status
 )
 from typing import (
@@ -30,7 +33,7 @@ from server.src.modules.posts.service import (
 
 
 router = APIRouter(
-    prefix = '/posts',
+    prefix = '/api/posts',
     tags = ["Post"]
 )
 
@@ -40,8 +43,8 @@ router = APIRouter(
     response_model = PostPrivateOut
 )
 async def create_post(
-    post: PostCreate, 
     current_user: int = Depends(get_current_user), 
+    post: PostCreate = Body(...), 
     db: AsyncSession = Depends(get_db)
 ) -> Post:
 
@@ -53,17 +56,17 @@ async def create_post(
 
 # get a post of user for admin
 @router.get(
-    '/id', 
+    '/{id}', 
     response_model = PostAdminOut
 )
 async def get_post(
-    id: int, 
     current_user: int = Depends(get_current_user), 
+    id: int = Path(gt = 0), 
     db: AsyncSession = Depends(get_db)
 ) -> Optional[Post]:
 
     # send the data to the post_service.py to performe operations 
-    return await get_one_post(id, current_user, db)
+    return await get_one_post(id, db)
 
 
 
@@ -76,9 +79,9 @@ async def get_post(
 async def get_all_posts_admin(
     current_user: int = Depends(get_current_user), 
     db: AsyncSession = Depends(get_db), 
-    limit: int = 10, 
-    skip: int = 0, 
-    search: Optional[str] = ""
+    limit: int = Query(gt = 0), 
+    skip: int = Query(gt = 0), 
+    search: Optional[str] = Query()
 ) -> Optional[List[Post]]:
 
     # send the data to the post_service.py to performe operations 
@@ -93,11 +96,11 @@ async def get_all_posts_admin(
     response_model = List[PostPublicOut]
 )
 async def get_all_posts_owner(
-    title: str, 
-    current_user: int = Depends(get_current_user), 
-    db: AsyncSession = Depends(get_db), 
-    limit: int = 10, 
-    skip: int = 0
+    current_user = Depends(get_current_user), 
+    title: str = Query(), 
+    limit: int = Query(gt = 0), 
+    skip: int = Query(gt = 0), 
+    db: AsyncSession = Depends(get_db)
 ) -> Optional[List[Post]]:
 
     # send the data to the post_service.py to performe operations 
@@ -108,13 +111,13 @@ async def get_all_posts_owner(
 
 # update post
 @router.patch(
-    '/id', 
+    '/{id}', 
     response_model = PostPrivateOut
 )
 async def update_post(
-    id: int, 
-    update_post: PostUpdate, 
-    current_user: int = Depends(get_current_user), 
+    current_user = Depends(get_current_user), 
+    id: int = Path(gt = 0), 
+    update_post: PostUpdate = Body(...), 
     db: AsyncSession = Depends(get_db)
 ) -> Post:
 
@@ -126,12 +129,12 @@ async def update_post(
 
 # delete post
 @router.delete(
-    '/id', 
+    '/{id}', 
     status_code = status.HTTP_204_NO_CONTENT
 )
 async def delete_post(
-    id: int, 
-    current_user: int = Depends(get_current_user), 
+    current_user = Depends(get_current_user), 
+    id: int = Path(gt = 0), 
     db: AsyncSession = Depends(get_db)
 ) :
 
