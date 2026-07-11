@@ -1,4 +1,3 @@
-# server/requirements/base.txt
 fastapi==0.128.0
 uvicorn[standard]==0.40.0
 starlette==0.50.0
