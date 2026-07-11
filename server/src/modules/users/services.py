@@ -2,10 +2,10 @@ from typing import List
 from fastapi import Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from server.src.common.errors.business_codes import ErrorCode
-from server.src.common.errors.http_exception import (
+from server.src.common.errors import (
     ConflictException, 
-    NotFoundException
+    NotFoundException,
+    ErrorCode
 )
 from src.core.security import hash
 from server.src.modules.users.model import User
@@ -33,10 +33,16 @@ async def create_user(
 ) -> User:
    
     if await get_user_by_email(user_in.email, db):
-        raise ConflictException(message = f"User with email: {user_in.email} already exists")
+        raise ConflictException(
+            message = f"User with email: {user_in.email} already exists",
+            error_code = ErrorCode.USER_ALREADY_EXISTS
+        )
     
     if await get_user_by_username(user_in.username, db):
-        raise ConflictException(message = f"User with username: {user_in.username} already exists.")
+        raise ConflictException(
+            message = f"User with username: {user_in.username} already exists.",
+            error_code = ErrorCode.USER_ALREADY_EXISTS
+        )
     
     user_data = user_in.model_dump()
     user_data["password"] = await hash(user_data["password"])
@@ -63,7 +69,10 @@ async def get_user_email(
     user = await get_user_by_email(email, db)
 
     if not user:
-        raise NotFoundException(message = f"User with email: {email} does not exist!", error_code = ErrorCode.USER_NOT_FOUND)
+        raise NotFoundException(
+            message = f"User with email: {email} does not exist!", 
+            error_code = ErrorCode.USER_NOT_FOUND
+        )
     
     return user
 
@@ -78,7 +87,10 @@ async def get_user_username(
     user = await get_user_by_username(username, db)
 
     if not user:
-        raise NotFoundException(message = f"User with username: {username} does not exist.", error_code = ErrorCode.USER_NOT_FOUND)
+        raise NotFoundException(
+            message = f"User with username: {username} does not exist.", 
+            error_code = ErrorCode.USER_NOT_FOUND
+        )
     
     return user
 
@@ -105,7 +117,10 @@ async def get_user_id(
     user = await get_user_by_id(id, db)
 
     if not user:
-        raise NotFoundException(message = f"User by id: {id} does not exist.", error_code = ErrorCode.USER_NOT_FOUND)
+        raise NotFoundException(
+            message = f"User by id: {id} does not exist.", 
+            error_code = ErrorCode.USER_NOT_FOUND
+        )
     
     return user
 
@@ -122,7 +137,10 @@ async def update_user_by_email(
 
     # if there is not any user by this email
     if not user:
-        raise NotFoundException(message = f"User by id: {id} does not exist.", error_code = ErrorCode.USER_NOT_FOUND)
+        raise NotFoundException(
+            message = f"User by id: {id} does not exist.", 
+            error_code = ErrorCode.USER_NOT_FOUND
+        )
     
     # delete undefined or null elements
     data = updated_user.model_dump(exclude_unset=True)
@@ -146,7 +164,10 @@ async def delete_user_by_id(
     
     # if there is not any user by this email
     if not user:
-        raise NotFoundException(message = f"User by id: {id} does not exist.", error_code = ErrorCode.USER_NOT_FOUND)
+        raise NotFoundException(
+            message = f"User by id: {id} does not exist.", 
+            error_code = ErrorCode.USER_NOT_FOUND
+        )
         
     # if the user exists then delete this
     await delete_user(user, db)
