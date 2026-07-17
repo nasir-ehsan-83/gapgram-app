@@ -1,11 +1,14 @@
-# config/production.py
 from .config import Settings
+from pydantic_settings import SettingsConfigDict
 
 class ProductionSettings(Settings):
-    DEBUG: bool
-    LOG_LEVEL: str
+    DEBUG: bool = False
+    LOG_LEVEL: str = "INFO"
     
-    class Config:
-        env_file = ".env.production"
+    model_config = SettingsConfigDict(
+        env_file=(".env", ".env.production"),
+        env_file_encoding="utf-8",
+        extra="ignore"
+    )
 
 prod_settings = ProductionSettings()
