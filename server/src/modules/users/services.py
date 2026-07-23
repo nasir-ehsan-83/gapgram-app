@@ -1,8 +1,8 @@
-from typing import List
+from typing import Sequence
 from fastapi import Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from server.src.common.errors import (
+from src.common.errors import (
     ConflictException, 
     NotFoundException,
     ErrorCode
@@ -54,7 +54,7 @@ async def create_user(
 
 async def get_all_users(
     db: AsyncSession
-) -> List[User]:
+) -> Sequence[User]:
 
     return await get_users(db)
 
@@ -102,7 +102,7 @@ async def search_user(
     limit: int, 
     skip: int, 
     db: AsyncSession
-) -> List[User]:
+) -> Sequence[User]:
 
     return await get_users_by_name(name, limit, skip, db)
 
@@ -150,7 +150,7 @@ async def update_user_by_email(
         data["password"] = await hash(data["password"])
         
     
-    return await update_user(data, user)
+    return await update_user(data, user, db)
 
 
 

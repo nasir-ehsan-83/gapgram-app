@@ -8,8 +8,11 @@ from fastapi import (
 )
 from typing import (
     List, 
-    Optional
+    Optional,
+    Sequence
 )
+from src.common.errors.business_codes import ErrorCode
+from src.modules.auth.schemas import TokenData
 from src.common.errors.http_exception import BadRequestException
 from src.db.database import get_db
 from src.common.dependencies.current_user import get_current_user
@@ -21,7 +24,7 @@ from src.modules.users.schemas import (
     UserPublicOut, 
     UserUpdate
 )
-from server.src.modules.users.services import (
+from src.modules.users.services import (
     create_user,
     delete_user_by_id, 
     get_user_email,
@@ -65,11 +68,11 @@ async def create_new_user(
     response_model = List[UserAdminOut]
 )
 async def get_users(
-    current_user = Depends(get_current_user),
+    current_user: TokenData = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
-) -> List[User]:
+) -> Sequence[User]:
     
-    return await get_all_users(current_user, db)
+    return await get_all_users(db)
 
 
 
@@ -81,7 +84,7 @@ async def get_users(
     response_model = UserPrivateOut
 )
 async def get_user(
-    current_user = Depends(get_current_user),
+    current_user: TokenData = Depends(get_current_user),
     email: Optional[str] = Query(), 
     username: Optional[str] = Query(), 
     db: AsyncSession = Depends(get_db)
@@ -92,7 +95,7 @@ async def get_user(
     if username:
         return await get_user_username(username, db)
     
-    raise BadRequestException(message = "Provide email or username")
+    raise BadRequestException(message = "Provide email or username", error_code = ErrorCode.METHOD_NOT_ALLOWED)
 
 
 
@@ -103,13 +106,13 @@ async def get_user(
     '/search', 
     response_model = List[UserPublicOut]
 )
-async def search_user(
-    current_user = Depends(get_current_user),
+async def search_user_by_name(
+    current_user: TokenData = Depends(get_current_user),
     name: str = Query(), 
     limit: int = Query(gt = 0), 
     skip: int = Query(gt = 0), 
     db: AsyncSession = Depends(get_db)
-) -> List[User]:
+) -> Sequence[User]:
     return await search_user(name, limit, skip, db)
 
 
@@ -121,7 +124,7 @@ async def search_user(
     response_model = UserAdminOut
 )
 async def get_user_by_id(
-    current_user = Depends(get_current_user),
+    current_user: TokenData = Depends(get_current_user),
     id: int = Path(gt = 0), 
     db: AsyncSession = Depends(get_db)
 ) -> User:
@@ -150,7 +153,7 @@ async def update_user(
 # delete user by email
 @router.delete('/{id}')
 async def delete_user(
-    current_user = Depends(get_current_user), 
+    current_user: TokenData = Depends(get_current_user), 
     id: int = Path(gt = 0), 
     db: AsyncSession = Depends(get_db)
 ):

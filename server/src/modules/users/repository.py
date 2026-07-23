@@ -1,12 +1,10 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from typing import (
-    List, 
-    Optional
-)
-from src.modules.users.schemas import (
-    UserCreate, 
-    UserUpdate
+    Any,
+    Dict, 
+    Optional,
+    Sequence
 )
 from src.modules.users.model import User
 
@@ -34,7 +32,7 @@ async def get_user_by_username(
 
 
 async def create_new_user(
-    user_data: UserCreate, 
+    user_data: Dict[str, Any], 
     db: AsyncSession
 ) -> User:
     
@@ -49,7 +47,7 @@ async def create_new_user(
 
 async def get_users(
     db: AsyncSession
-) -> List[User]:
+) -> Sequence[User]:
     
     users_query = await db.execute(select(User))
 
@@ -62,7 +60,7 @@ async def get_users_by_name(
     limit: int, 
     skip: int, 
     db: AsyncSession
-) -> List[User]:
+) -> Sequence[User]:
 
     user_query = await db.execute(select(User).filter(User.name.contains(name)).limit(limit).offset(skip))
     
@@ -84,7 +82,7 @@ async def get_user_by_id(
 
 
 async def update_user(
-    data: UserUpdate, 
+    data: Dict[str, Any], 
     user: User, 
     db: AsyncSession
 ) -> User:
